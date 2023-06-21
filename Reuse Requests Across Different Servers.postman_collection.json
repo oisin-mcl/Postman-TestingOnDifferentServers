@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "5187ac7b-be9c-4f49-8af2-53c9b1f077f3",
+		"name": "Reuse Requests Across Different Servers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17202983"
+	},
+	"item": [
+		{
+			"name": "GET Sample Args",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "apikey",
+						"value": "{{API_Key}}",
+						"type": "text"
+					},
+					{
+						"key": "{{CookieName}}",
+						"value": "{{CookieValue}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://postman-echo.com/get?server={{Server}}",
+					"protocol": "https",
+					"host": [
+						"postman-echo",
+						"com"
+					],
+					"path": [
+						"get"
+					],
+					"query": [
+						{
+							"key": "server",
+							"value": "{{Server}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Test that the expected 200 code is returned",
+					"pm.test(\"Request Made Successfully\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"",
+					"// Get the response JSON returned from the request",
+					"var responseJson = pm.response.json();",
+					"",
+					"//Check that the API Key is sent correct in the request header",
+					"pm.test(\"API Key set correct\", function () {",
+					"    pm.expect(pm.request.headers.get(\"apikey\")).to.eql(pm.environment.get(\"API_Key\"));",
+					"});",
+					"",
+					"//Get the Server value returned in the request",
+					"var serverReturned = responseJson.args.server;",
+					"",
+					"//Check that the server is set correctly in the \"args\" object",
+					"pm.test(\"Server set correct\", function () {",
+					"    pm.expect(serverReturned).to.eql(pm.environment.get(\"Server\"));",
+					"});",
+					"",
+					"//Test that the URL has the correct server component added",
+					"pm.test(\"URL component set correct\", function () {",
+					"",
+					"    var url = responseJson.url;",
+					"",
+					"    pm.expect(url).to.include(pm.environment.get(\"Server\"));",
+					"",
+					"});"
+				]
+			}
+		}
+	]
+}
